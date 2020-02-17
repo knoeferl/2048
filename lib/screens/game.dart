@@ -50,7 +50,7 @@ class _GameState extends State<Game> {
                       color: Color(3),
                       padding: const EdgeInsets.all(8.0),
                       onPressed: () {
-                        return null;
+                        return createTile();
                       },
                       child: FittedBox(
                         child: Text(
@@ -72,4 +72,11 @@ class _GameState extends State<Game> {
       ),
     );
   }
+
+void createTile() {
+    setState(() {
+      buttonsList.createTile();
+    });
+  }
+
 }

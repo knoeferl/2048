@@ -1,7 +1,5 @@
 import 'dart:math';
 
-import 'package:flutter/rendering.dart';
-
 import './tile.dart';
 
 enum Direction { left, right, top, bottom }
@@ -24,41 +22,39 @@ class Field {
       }).toList();
     }).toList();
   }
-
-  bool createTile() {
-    var rand = Random();
-    for (var i = 0; i < 30; i++) {
-      int col = rand.nextInt(_board.length);
-      int row = rand.nextInt(_board.length);
-      if (_board[col][row].value == 0) {
-        _board[col][row].value = random2or4(rand);
-        return true;
-      }
-    }
-    for (var row in _board) {
+List<Tile> getEmptyTiles(){
+  List<Tile> ret = List();
+   for (var row in _board) {
       for (var number in row) {
         if (number.value == 0) {
-          number.value = random2or4(rand);
-          return true;
+          ret.add(number);
         }
       }
     }
-    return false;
+return ret;
+}
+
+  bool createTile() {
+    var rand = Random();
+    var emptyTiles = getEmptyTiles();
+    if (emptyTiles.isEmpty) return false;
+    emptyTiles.elementAt(rand.nextInt(emptyTiles.length)).value = random2or4();
+    return true;
   }
    List<Tile> flatList() {
     return this._board.expand((i) => i).toList();
   }
 
-  moveTileRight(int col, int row, int value, Direction direction) {
+  moveTile(int col, int row, int value, Direction direction) {
     try {
       if (nextTile(col, row, direction).value == 0) {
         nextTile(col, row, direction).value = value;
-        moveTileRight(col, row, value, direction);
+        moveTile(col, row, value, direction);
       }
-      if (moveTileRight(col, row, value, direction).value == value) {
+      if (moveTile(col, row, value, direction).value == value) {
         int newValue = value * 2;
         _board[col][row].value = 0;
-        moveTileRight(col, row, value, direction).value = newValue;
+        moveTile(col, row, value, direction).value = newValue;
         if (newValue == 2048) {
           print("win");
         }
@@ -83,7 +79,7 @@ class Field {
     }
   }
 
-  int random2or4(Random rand) => (rand.nextBool() ? 2 : 4);
+  int random2or4() => (Random().nextBool() ? 2 : 4);
 
   getLength() {
     return _board.length;
