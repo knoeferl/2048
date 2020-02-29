@@ -4,10 +4,7 @@ class Tile {
   int col;
   int row;
 
-  Tile({int col , int row, int value}){
-    this.col = col;
-    this.row = row;
-    this.value = value;
+  Tile({this.col , this.row, this.value}){
     this.moveable = true;
   }
   setMoveable(bool moveable){
