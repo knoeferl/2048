@@ -7,13 +7,13 @@ class Tile extends StatelessWidget {
     Key key,
     @required this.buttonsList,
     @required this.context,
-    @required this.i,
+    @required this.tileNum,
     @required this.tileWidth,
   }) : super(key: key);
 
   final Field buttonsList;
   final context;
-  final i;
+  final tileNum;
   final tileWidth;
 
   @override
@@ -24,17 +24,17 @@ class Tile extends StatelessWidget {
                     padding: const EdgeInsets.all(5.0),
                     child: Container(
                       color: tileColors.containsKey(
-                              buttonsList.flatList()[i].value)
-                          ? tileColors[buttonsList.flatList()[i].value]
+                              buttonsList.flatList()[tileNum].value)
+                          ? tileColors[buttonsList.flatList()[tileNum].value]
                           : Colors.blue[500],
                       
                       padding: const EdgeInsets.all(15.0),
                       child: FittedBox(
                         child: Text(
-                          buttonsList.flatList()[i].value == 0
+                          buttonsList.flatList()[tileNum].value == 0
                               ? " "
                               : buttonsList
-                                  .flatList()[i]
+                                  .flatList()[tileNum]
                                   .value
                                   .toString(),
                           style: new TextStyle(

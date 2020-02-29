@@ -147,14 +147,14 @@ class _GameState extends State<Game> {
                       },
                       child: Stack(
                           children: Iterable.generate(
-                              buttonsList.flatList().length, (i) {
+                              buttonsList.flatList().length, (tileNum) {
                         var tileWidth = totalwidth / buttonsList.getLength();
                         print(totalwidth.toString());
                         print(tileWidth.toString());
                         return Positioned(
-                            left: (i % buttonsList.getLength() * tileWidth)
+                            left: (tileNum % buttonsList.getLength() * tileWidth)
                                 .toDouble(),
-                            top: ((i / buttonsList.getLength())
+                            top: ((tileNum / buttonsList.getLength())
                                         .toDouble()
                                         .floor() *
                                     tileWidth)
@@ -162,7 +162,7 @@ class _GameState extends State<Game> {
                             child: Tile(
                               context: context,
                               buttonsList: buttonsList,
-                              i: i,
+                              tileNum: tileNum,
                               tileWidth: tileWidth,
                             ));
                       }).toList()),
