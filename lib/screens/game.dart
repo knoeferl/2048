@@ -175,11 +175,11 @@ class _GameState extends State<Game> {
     );
   }
 
-  void createTile() {
-    setState(() {
-      buttonsList.createTile();
-    });
-  }
+  // void createTile() {
+  //   setState(() {
+  //     buttonsList.createTile();
+  //   });
+  // }
 
   void newGame({int size = 4}) {
     setState(() {
@@ -193,8 +193,8 @@ class _GameState extends State<Game> {
     setState(() {
       if(!buttonsList.notMoved) buttonsList.saveBoard();
       buttonsList.moveTiles(direction);
-      buttonsList.createTile();
-      
+      if (buttonsList.gameWon && !buttonsList.playAfterWon) wonDialog(context);
+      if (!buttonsList.createTile() && buttonsList.gamelost()) lostDialog(context);
     });
   }
   void redo() {
@@ -206,6 +206,25 @@ class _GameState extends State<Game> {
 
   void animateMovingTile(Direction direction){
 
+  }
+  wonDialog(BuildContext context){
+    return showDialog(context: context, builder: (_)=>AlertDialog(
+      title: Text("you won!"),
+      actions: <Widget>[
+       IconButton(onPressed: ()=> newGame(size: buttonsList.getLength()), icon: Icon(Icons.refresh)),
+      ],
+    ));
+  }
+
+
+  lostDialog(BuildContext context){
+    return showDialog(context: context, builder: (_)=>AlertDialog(
+      title: Text("Lost"),
+      actions: <Widget>[
+       IconButton(onPressed: ()=> newGame(size: buttonsList.getLength()), icon: Icon(Icons.refresh)),
+      ],
+    ));
+    
   }
 
 }

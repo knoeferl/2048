@@ -36,8 +36,6 @@ class _TileBoxState extends State<TileBox> with SingleTickerProviderStateMixin{
       controller.animateTo(1.0);
     }
     double tileWidth = widget.tileWidth;
-    print(widget.tile.isNew);
-    print(animation.value);
     return AnimatedTile(tileWidth: tileWidth, animation: animation, widget: widget);
   }
          @override

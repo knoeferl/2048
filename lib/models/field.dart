@@ -10,8 +10,10 @@ class Field {
   int size;
   int score;
   int oldScore;
-  bool notMoved = false;
-  bool gameWon = false;
+  bool notMoved;
+  bool gameWon;
+  bool gameLost;
+  bool playAfterWon;
   Field({this.size = 4}) {
     board = Iterable.generate(
         size,
@@ -25,6 +27,9 @@ class Field {
     createTile();
     saveBoard();
     notMoved = true;
+    gameWon = false;
+    gameLost = false;
+    playAfterWon = false;
   }
 
   void saveBoard() {
@@ -33,7 +38,6 @@ class Field {
         (col) => Iterable.generate(size,
                 (row) => board[col][row].value)
             .toList()).toList();
-            print(lastBoard);
     oldScore = score;
     notMoved = true;
   }
@@ -43,6 +47,7 @@ class Field {
         board[col][row].value = lastBoard[col][row];
       }
     }
+    score = oldScore;
   }
 
   List<Tile> getEmptyTiles() {
@@ -71,6 +76,11 @@ class Field {
   }
 
   moveTiles(Direction direction) {
+     for (int col =0; col < board.length; ++col){
+      for (int row = 0; row < board.length; ++row) {
+        board[col][row].moveable = true;
+      }
+    }
     switch (direction) {
       case Direction.top:
           for (int row = 0; row < board.length; ++row) {
@@ -114,12 +124,13 @@ class Field {
         notMoved = false;
         return;
       }
-      if (nextTileN.value == tile.value && tile.value != 0) {
+      if (nextTileN.value == tile.value && tile.value != 0 && tile.moveable) {
         tile.isNew = false;
         int newValue = tile.value * 2;
         notMoved = false;
         score += newValue;
         tile.value = newValue;
+        tile.moveable = false;
         nextTileN.value = 0;
         nextTileN.isNew = true;
         moveTile(nextTileN, direction);
@@ -170,5 +181,33 @@ class Field {
 
   int getLength() {
     return board.length;
+  }
+
+  bool gamelost(){
+    // if (getEmptyTiles().isEmpty) return true;
+     for (int col =0; col < board.length; ++col){
+      for (int row = 0; row < board.length; ++row) {
+        try {
+         if (board[col][row].value == nextTile(board[col][row], Direction.top).value) return false;
+        } catch (e) {
+        }
+        try {
+         if (board[col][row].value == nextTile(board[col][row], Direction.bottom).value) return false;
+          
+        } catch (e) {
+        }
+        try {
+         if (board[col][row].value == nextTile(board[col][row], Direction.left).value) return false;
+          
+        } catch (e) {
+        }
+        try {
+         if (board[col][row].value == nextTile(board[col][row], Direction.right).value) return false;
+          
+        } catch (e) {
+        }
+      }
+    }
+    return true;
   }
 }
