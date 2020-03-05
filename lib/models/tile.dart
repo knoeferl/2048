@@ -3,6 +3,7 @@ class Tile {
   bool moveable;
   int col;
   int row;
+  bool isNew = true;
 
   Tile({this.col , this.row, this.value}){
     this.moveable = true;
@@ -14,5 +15,9 @@ class Tile {
   String toString()
   {
     return "col: " + col.toString() + " row: "+ row.toString() + " value: " + value.toString();
+  }
+
+  bool isEmpty() {
+    return value==0;
   }
 }

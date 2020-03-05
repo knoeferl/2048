@@ -14,9 +14,8 @@ class _GameState extends State<Game> {
   bool gameOver;
   bool _isMoving;
   Field buttonsList;
-  double totalwidth = 100;
+  double totalwidth= 400;
   GlobalKey _fieldkey = GlobalKey();
-  void t() {}
 
   @override
   void initState() {
@@ -88,8 +87,8 @@ class _GameState extends State<Game> {
                           padding: const EdgeInsets.all(8.0),
                           child: FlatButton(
                               color: Colors.orange[100],
-                              onPressed: () => newGame(),
-                              child: Icon(Icons.autorenew)),
+                              onPressed: () => redo(),
+                              child: Icon(Icons.redo)),
                         ),
                       ),
                     )
@@ -100,59 +99,58 @@ class _GameState extends State<Game> {
                 aspectRatio: 1,
                 child: Padding(
                   padding: EdgeInsets.all(5),
-                  child: Container(
-                key: _fieldkey,
-                    decoration: BoxDecoration(color: Colors.grey[500]),
-                    child: GestureDetector(
-                      onVerticalDragUpdate: (detail) {
-                        if (detail.delta.distance == 0 || _isMoving) {
-                          return;
-                        }
-                        _isMoving = true;
-                        if (detail.delta.direction > 0) {
-                          setState(() {
-                            moveTiles(Direction.top);
-                          });
-                        } else {
-                          setState(() {
-                            moveTiles(Direction.bottom);
-                          });
-                        }
-                      },
-                      onVerticalDragEnd: (d) {
-                        _isMoving = false;
-                      },
-                      onVerticalDragCancel: () {
-                        _isMoving = false;
-                      },
-                      onHorizontalDragUpdate: (d) {
-                        if (d.delta.distance == 0 || _isMoving) {
-                          return;
-                        }
-                        _isMoving = true;
-                        if (d.delta.direction > 0) {
-                          setState(() {
-                            moveTiles(Direction.left);
-                          });
-                        } else {
-                          setState(() {
-                            moveTiles(Direction.right);
-                          });
-                        }
-                      },
-                      onHorizontalDragEnd: (d) {
-                        _isMoving = false;
-                      },
-                      onHorizontalDragCancel: () {
-                        _isMoving = false;
-                      },
+                  child: GestureDetector(
+                    onVerticalDragUpdate: (detail) {
+                      if (detail.delta.distance == 0 || _isMoving) {
+                        return;
+                      }
+                      _isMoving = true;
+                      if (detail.delta.direction > 0) {
+                        setState(() {
+                          moveTiles(Direction.top);
+                        });
+                      } else {
+                        setState(() {
+                          moveTiles(Direction.bottom);
+                        });
+                      }
+                    },
+                    onVerticalDragEnd: (d) {
+                      _isMoving = false;
+                    },
+                    onVerticalDragCancel: () {
+                      _isMoving = false;
+                    },
+                    onHorizontalDragUpdate: (d) {
+                      if (d.delta.distance == 0 || _isMoving) {
+                        return;
+                      }
+                      _isMoving = true;
+                      if (d.delta.direction > 0) {
+                        setState(() {
+                          moveTiles(Direction.left);
+                        });
+                      } else {
+                        setState(() {
+                          moveTiles(Direction.right);
+                        });
+                      }
+                    },
+                    onHorizontalDragEnd: (d) {
+                      _isMoving = false;
+                    },
+                    onHorizontalDragCancel: () {
+                      _isMoving = false;
+                    },
+                    child: Container(
+                      key: _fieldkey,
+                      decoration: BoxDecoration(color: Colors.grey[500]),
                       child: Stack(
                           children: Iterable.generate(
                               buttonsList.flatList().length, (tileNum) {
                         var tileWidth = totalwidth / buttonsList.getLength();
-                        print(totalwidth.toString());
-                        print(tileWidth.toString());
-                        return Positioned(
+                        return AnimatedPositioned(
+                          key: Key("tile"+tileNum.toString()),
                             left: (tileNum % buttonsList.getLength() * tileWidth)
                                 .toDouble(),
                             top: ((tileNum / buttonsList.getLength())
@@ -160,12 +158,13 @@ class _GameState extends State<Game> {
                                         .floor() *
                                     tileWidth)
                                 .toDouble(),
-                            child: Tile(
+                            child: TileBox(
                               context: context,
                               buttonsList: buttonsList,
                               tileNum: tileNum,
                               tileWidth: tileWidth,
-                            ));
+                              tile: buttonsList.flatList()[tileNum],
+                            ), duration: Duration(milliseconds: 300),);
                       }).toList()),
                     ),
                   ),
@@ -192,10 +191,23 @@ class _GameState extends State<Game> {
 
   void moveTiles(Direction direction) {
     setState(() {
+      if(!buttonsList.notMoved) buttonsList.saveBoard();
       buttonsList.moveTiles(direction);
       buttonsList.createTile();
+      
     });
   }
+  void redo() {
+    setState(() {
+      buttonsList.setBoard();
+      buttonsList.notMoved = true;
+    });
+  }
+
+  void animateMovingTile(Direction direction){
+
+  }
+
 }
 
 

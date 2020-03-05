@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import '../models/tileColors.dart';
 import '../models/field.dart';
+import '../models/tile.dart';
 
-class Tile extends StatelessWidget {
-  const Tile({
+class TileBox extends StatefulWidget {
+  const TileBox({
     Key key,
+    @required this.tile,
     @required this.buttonsList,
     @required this.context,
     @required this.tileNum,
@@ -13,28 +15,88 @@ class Tile extends StatelessWidget {
 
   final Field buttonsList;
   final context;
-  final tileNum;
-  final tileWidth;
+  final int tileNum;
+  final double tileWidth;
+  final Tile tile;
 
   @override
-  Widget build(BuildContext context) => SizedBox(
+  _TileBoxState createState() => _TileBoxState();
+}
+
+class _TileBoxState extends State<TileBox> with SingleTickerProviderStateMixin{
+  AnimationController controller;
+  Animation<double> animation;
+  @override
+  Widget build(BuildContext context) { 
+      if (widget.tile.isNew && !widget.tile.isEmpty()) {
+      controller.reset();
+      controller.forward();
+      widget.tile.isNew = false;
+    } else {
+      controller.animateTo(1.0);
+    }
+    double tileWidth = widget.tileWidth;
+    print(widget.tile.isNew);
+    print(animation.value);
+    return AnimatedTile(tileWidth: tileWidth, animation: animation, widget: widget);
+  }
+         @override
+  void initState() {
+    super.initState();
+    controller = AnimationController(
+      duration: Duration(
+        milliseconds: 300,
+      ),
+      vsync: this,
+    );     
+    animation = Tween(begin: 0.0, end: 1.0).animate(controller);
+  } 
+    @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+    widget.tile.isNew = false;
+  } 
+ 
+
+
+
+
+}
+
+class AnimatedTile extends AnimatedWidget {
+  const AnimatedTile({
+    Key key,
+    @required this.tileWidth,
+    @required this.animation,
+    @required this.widget,
+  }) : super(key: key, listenable: animation);
+
+  final double tileWidth;
+  final Animation<double> animation;
+  final TileBox widget;
+
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
                   width: tileWidth,
                   height: tileWidth,
                   child: Padding(
-                    padding: const EdgeInsets.all(5.0),
+                    padding: EdgeInsets.all(5*animation.value.toDouble()),
                     child: Container(
                       color: tileColors.containsKey(
-                              buttonsList.flatList()[tileNum].value)
-                          ? tileColors[buttonsList.flatList()[tileNum].value]
+                              widget.buttonsList.flatList()[widget.tileNum].value)
+                          ? tileColors[widget.buttonsList.flatList()[widget.tileNum].value]
                           : Colors.blue[500],
                       
                       padding: const EdgeInsets.all(15.0),
                       child: FittedBox(
                         child: Text(
-                          buttonsList.flatList()[tileNum].value == 0
+                          widget.buttonsList.flatList()[widget.tileNum].value == 0
                               ? " "
-                              : buttonsList
-                                  .flatList()[tileNum]
+                              : widget.buttonsList
+                                  .flatList()[widget.tileNum]
                                   .value
                                   .toString(),
                           style: new TextStyle(
@@ -44,4 +106,5 @@ class Tile extends StatelessWidget {
                     ),
                   ),
                 );
+  }
 }

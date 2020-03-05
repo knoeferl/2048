@@ -49,7 +49,6 @@ class _ListDrawerState extends State<ListDrawer> {
                   });
                 },
               );
-
               if (i == numItems - 1 && widget.lastFocusNode != null) {
                 return Focus(
                   focusNode: widget.lastFocusNode,
@@ -59,6 +58,8 @@ class _ListDrawerState extends State<ListDrawer> {
                 return listTile;
               }
             }),
+            Divider(),
+            ListTile(),
           ],
         ),
       ),
