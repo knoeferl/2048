@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/field.dart';
-import '../widgets/Tile.dart';
+import '../widgets/TileBox.dart';
 import '../widgets/listdrawer.dart';
 
 class Game extends StatefulWidget {
@@ -204,9 +204,7 @@ class _GameState extends State<Game> {
     });
   }
 
-  void animateMovingTile(Direction direction){
-
-  }
+  
   wonDialog(BuildContext context){
     return showDialog(context: context, builder: (_)=>AlertDialog(
       title: Text("you won!"),
@@ -215,7 +213,10 @@ class _GameState extends State<Game> {
       ],
     ));
   }
+void animateMovingTile(Direction direction){
+    
 
+  }
 
   lostDialog(BuildContext context){
     return showDialog(context: context, builder: (_)=>AlertDialog(
