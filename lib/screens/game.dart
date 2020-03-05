@@ -14,8 +14,9 @@ class _GameState extends State<Game> {
   bool gameOver;
   bool _isMoving;
   Field buttonsList;
-  double totalwidth= 400;
+  double totalwidth = 400;
   GlobalKey _fieldkey = GlobalKey();
+  int animationTime = 0;
 
   @override
   void initState() {
@@ -150,21 +151,40 @@ class _GameState extends State<Game> {
                               buttonsList.flatList().length, (tileNum) {
                         var tileWidth = totalwidth / buttonsList.getLength();
                         return AnimatedPositioned(
-                          key: Key("tile"+tileNum.toString()),
-                            left: (tileNum % buttonsList.getLength() * tileWidth)
-                                .toDouble(),
-                            top: ((tileNum / buttonsList.getLength())
-                                        .toDouble()
-                                        .floor() *
-                                    tileWidth)
-                                .toDouble(),
-                            child: TileBox(
-                              context: context,
-                              buttonsList: buttonsList,
-                              tileNum: tileNum,
-                              tileWidth: tileWidth,
-                              tile: buttonsList.flatList()[tileNum],
-                            ), duration: Duration(milliseconds: 300),);
+                          onEnd: () =>
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                            animationTime = 10;
+                            setState(() {
+                              buttonsList.board
+                                  .forEach((row) => row.forEach((tile) {
+                                        tile.value = tile.newValue;
+                                        tile.positionHorizontal = 0;
+                                        tile.positionVertical = 0;
+                                      }));
+                            });
+                          }),
+                          key: Key("tile" + tileNum.toString()),
+                          left:
+                              (tileNum % buttonsList.getLength() * tileWidth) +
+                                  (buttonsList
+                                          .flatList()[tileNum]
+                                          .positionHorizontal *
+                                      tileWidth),
+                          top: ((tileNum / buttonsList.getLength()).floor() *
+                                  tileWidth) +
+                              (buttonsList
+                                      .flatList()[tileNum]
+                                      .positionVertical *
+                                  tileWidth),
+                          child: TileBox(
+                            context: context,
+                            buttonsList: buttonsList,
+                            tileNum: tileNum,
+                            tileWidth: tileWidth,
+                            tile: buttonsList.flatList()[tileNum],
+                          ),
+                          duration: Duration(milliseconds: animationTime),
+                        );
                       }).toList()),
                     ),
                   ),
@@ -191,12 +211,15 @@ class _GameState extends State<Game> {
 
   void moveTiles(Direction direction) {
     setState(() {
-      if(!buttonsList.notMoved) buttonsList.saveBoard();
+      animationTime = 200;
+      if (!buttonsList.notMoved) buttonsList.saveBoard();
       buttonsList.moveTiles(direction);
       if (buttonsList.gameWon && !buttonsList.playAfterWon) wonDialog(context);
-      if (!buttonsList.createTile() && buttonsList.gamelost()) lostDialog(context);
+      if (!buttonsList.createTile() && buttonsList.gamelost())
+        lostDialog(context);
     });
   }
+
   void redo() {
     setState(() {
       buttonsList.setBoard();
@@ -204,30 +227,29 @@ class _GameState extends State<Game> {
     });
   }
 
-  
-  wonDialog(BuildContext context){
-    return showDialog(context: context, builder: (_)=>AlertDialog(
-      title: Text("you won!"),
-      actions: <Widget>[
-       IconButton(onPressed: ()=> newGame(size: buttonsList.getLength()), icon: Icon(Icons.refresh)),
-      ],
-    ));
-  }
-void animateMovingTile(Direction direction){
-    
-
-  }
-
-  lostDialog(BuildContext context){
-    return showDialog(context: context, builder: (_)=>AlertDialog(
-      title: Text("Lost"),
-      actions: <Widget>[
-       IconButton(onPressed: ()=> newGame(size: buttonsList.getLength()), icon: Icon(Icons.refresh)),
-      ],
-    ));
-    
+  wonDialog(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+              title: Text("you won!"),
+              actions: <Widget>[
+                IconButton(
+                    onPressed: () => newGame(size: buttonsList.getLength()),
+                    icon: Icon(Icons.refresh)),
+              ],
+            ));
   }
 
+  lostDialog(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+              title: Text("Lost"),
+              actions: <Widget>[
+                IconButton(
+                    onPressed: () => newGame(size: buttonsList.getLength()),
+                    icon: Icon(Icons.refresh)),
+              ],
+            ));
+  }
 }
-
-

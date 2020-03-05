@@ -23,20 +23,21 @@ class Field {
     gameWon = false;
     score = 0;
     oldScore = score;
+    gameWon = false;
+    gameLost = false;
+    playAfterWon = false;
+    notMoved = false;
     createTile();
     createTile();
     saveBoard();
     notMoved = true;
-    gameWon = false;
-    gameLost = false;
-    playAfterWon = false;
   }
 
   void saveBoard() {
     lastBoard = Iterable.generate(
         size,
         (col) => Iterable.generate(size,
-                (row) => board[col][row].value)
+                (row) => board[col][row].newValue)
             .toList()).toList();
     oldScore = score;
     notMoved = true;
@@ -45,6 +46,7 @@ class Field {
     for (int col =0; col < board.length; ++col){
       for (int row = 0; row < board.length; ++row) {
         board[col][row].value = lastBoard[col][row];
+        board[col][row].newValue = lastBoard[col][row];
       }
     }
     score = oldScore;
@@ -67,13 +69,14 @@ class Field {
     var rand = Random();
     var emptyTiles = getEmptyTiles();
     if (emptyTiles.isEmpty) return false;
-    emptyTiles.elementAt(rand.nextInt(emptyTiles.length)).value = random2or4();
+    emptyTiles.elementAt(rand.nextInt(emptyTiles.length)).setValue(random2or4());
     return true;
   }
 
   List<Tile> flatList() {
     return this.board.expand((i) => i).toList();
   }
+
 
   moveTiles(Direction direction) {
      for (int col =0; col < board.length; ++col){
@@ -110,37 +113,60 @@ class Field {
   moveTile(Tile tile, Direction direction) {
     try {
       Tile nextTileN = nextTile(tile, direction);
-      if (nextTileN.value == 0 && tile.value == 0) {
+      if (nextTileN.newValue == 0 && tile.newValue == 0) {
         moveTile(nextTileN, direction);
         return;
       }
-      if (nextTileN.value != 0 && tile.value == 0) {
+      if (nextTileN.newValue != 0 && tile.newValue == 0) {
         tile.isNew = false;
-        tile.value = nextTileN.value;
-        nextTileN.value = 0;
+        tile.newValue = nextTileN.newValue;
+        nextTileN.newValue = 0;
         nextTileN.isNew = true;
+        changePositon(nextTileN, direction: direction);
         moveTile(nextTileN, direction);
         moveTile(nextTile(tile, reverseDircetion(direction)), direction);
         notMoved = false;
         return;
       }
-      if (nextTileN.value == tile.value && tile.value != 0 && tile.moveable) {
-        tile.isNew = false;
-        int newValue = tile.value * 2;
-        notMoved = false;
+      if (nextTileN.newValue == tile.newValue && tile.newValue != 0 && tile.moveable) {
+        tile.isNew = true;
+        int newValue = tile.newValue * 2;
         score += newValue;
-        tile.value = newValue;
+        tile.newValue = newValue;
         tile.moveable = false;
-        nextTileN.value = 0;
+        nextTileN.newValue = 0;
         nextTileN.isNew = true;
+        changePositon(nextTileN, direction: direction);
         moveTile(nextTileN, direction);
         if (newValue == 2048) {
           gameWon = true;
         }
+        notMoved = false;
         return;
       }
       moveTile(nextTileN, direction);
     } catch (e) {}
+  }
+
+ changePositon(Tile tile, {Direction direction}) {
+    switch (direction) {
+      case Direction.top:
+        tile.positionVertical = -1;
+        break;
+      case Direction.bottom:
+        tile.positionVertical = 1;
+        break;
+      case Direction.right:
+        tile.positionHorizontal = -1;
+        break;
+      case Direction.left:
+        tile.positionHorizontal = 1;
+        break;
+      default:
+        tile.positionHorizontal = 0;
+        tile.positionVertical = 0;
+        break;
+    }
   }
 
   Direction reverseDircetion(Direction direction) {

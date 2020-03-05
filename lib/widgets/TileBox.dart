@@ -43,7 +43,7 @@ class _TileBoxState extends State<TileBox> with SingleTickerProviderStateMixin{
     super.initState();
     controller = AnimationController(
       duration: Duration(
-        milliseconds: 300,
+        milliseconds: 1000,
       ),
       vsync: this,
     );     
