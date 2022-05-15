@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/field.dart';
 import '../widgets/TileBox.dart';
 import '../widgets/listdrawer.dart';
+import 'dart:math' as math;
 
 class Game extends StatefulWidget {
   Game({Key? key}) : super(key: key);
@@ -39,20 +40,20 @@ class _GameState extends State<Game> {
           color: Colors.orange[50],
         ),
         child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Container(
-                height: 100,
-                margin: const EdgeInsets.all(8.0),
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    Container(
-                      width: 250,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Container(
+              height: 100,
+              margin: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Expanded(
+                    child: Container(
                       decoration: BoxDecoration(color: Colors.orange[100]),
                       child: FittedBox(
                         child: Column(
@@ -69,18 +70,27 @@ class _GameState extends State<Game> {
                         ),
                       ),
                     ),
-                    FittedBox(
+                  ),
+                  Expanded(
+                    child: FittedBox(
                       fit: BoxFit.fitWidth,
                       child: TextButton(
                           style:
                               TextButton.styleFrom(primary: Colors.orange[100]),
                           onPressed: () => redo(),
-                          child: const Icon(Icons.redo)),
-                    )
-                  ],
-                ),
+                          child: Transform(
+                            alignment: Alignment.center,
+                            transform: Matrix4.rotationY(math.pi),
+                            child: const Icon(Icons.redo),
+                          )),
+                    ),
+                  ),
+                ],
               ),
-              FittedBox(
+            ),
+            Expanded(
+
+              child: FittedBox(
                 fit: BoxFit.contain,
                 child: GestureDetector(
                   onVerticalDragUpdate: moveVertical,
@@ -95,43 +105,45 @@ class _GameState extends State<Game> {
                     height: totalWidth,
                     decoration: BoxDecoration(color: Colors.grey[500]),
                     child: Stack(
-                        children: Iterable.generate(
-                      buttonsList.flatList().length,
-                      (tileNum) {
-                        var tileWidth =
-                            totalWidth / buttonsList.getLength();
-                        return AnimatedPositioned(
-                          onEnd: () => WidgetsBinding.instance
-                              .addPostFrameCallback((_) {
-                            animationTime = 10;
-                            setState(() {
-                              for (var row in buttonsList.board) {
-                                for (var tile in row) {
-                                  tile.value = tile.newValue;
-                                  tile.positionHorizontal = 0;
-                                  tile.positionVertical = 0;
+                      children: Iterable.generate(
+                        buttonsList.flatList().length,
+                        (tileNum) {
+                          var tileWidth = totalWidth / buttonsList.getLength();
+                          return AnimatedPositioned(
+                            onEnd: () =>
+                                WidgetsBinding.instance.addPostFrameCallback((_) {
+                              animationTime = 10;
+                              setState(() {
+                                for (var row in buttonsList.board) {
+                                  for (var tile in row) {
+                                    tile.value = tile.newValue;
+                                    tile.positionHorizontal = 0;
+                                    tile.positionVertical = 0;
+                                  }
                                 }
-                              }
-                            });
-                          }),
-                          key: Key("tile_$tileNum"),
-                          left: left(tileNum, tileWidth),
-                          top: top(tileNum, tileWidth),
-                          duration: Duration(milliseconds: animationTime),
-                          child: TileBox(
-                            context: context,
-                            buttonsList: buttonsList,
-                            tileNum: tileNum,
-                            tileWidth: tileWidth,
-                            tile: buttonsList.flatList()[tileNum],
-                          ),
-                        );
-                      },
-                    ).toList()),
+                              });
+                            }),
+                            key: Key("tile_$tileNum"),
+                            left: left(tileNum, tileWidth),
+                            top: top(tileNum, tileWidth),
+                            duration: Duration(milliseconds: animationTime),
+                            child: TileBox(
+                              context: context,
+                              buttonsList: buttonsList,
+                              tileNum: tileNum,
+                              tileWidth: tileWidth,
+                              tile: buttonsList.flatList()[tileNum],
+                            ),
+                          );
+                        },
+                      ).toList(),
+                    ),
                   ),
                 ),
               ),
-            ]),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -185,7 +197,6 @@ class _GameState extends State<Game> {
       });
     }
   }
-
 
   void newGame({int size = 4}) {
     setState(() {
