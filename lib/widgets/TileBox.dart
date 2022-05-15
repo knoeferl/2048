@@ -5,12 +5,12 @@ import '../models/tile.dart';
 
 class TileBox extends StatefulWidget {
   const TileBox({
-    Key key,
-    @required this.tile,
-    @required this.buttonsList,
-    @required this.context,
-    @required this.tileNum,
-    @required this.tileWidth,
+      Key? key,
+    required this.tile,
+    required this.buttonsList,
+    required this.context,
+    required this.tileNum,
+    required this.tileWidth,
   }) : super(key: key);
 
   final Field buttonsList;
@@ -24,8 +24,8 @@ class TileBox extends StatefulWidget {
 }
 
 class _TileBoxState extends State<TileBox> with SingleTickerProviderStateMixin{
-  AnimationController controller;
-  Animation<double> animation;
+  late AnimationController controller;
+  late Animation<double> animation;
   @override
   Widget build(BuildContext context) { 
       if (widget.tile.isNew && !widget.tile.isEmpty()) {
@@ -36,13 +36,13 @@ class _TileBoxState extends State<TileBox> with SingleTickerProviderStateMixin{
       controller.animateTo(1.0);
     }
     double tileWidth = widget.tileWidth;
-    return AnimatedTile(tileWidth: tileWidth, animation: animation, widget: widget);
+    return AnimatedTile(tileWidth: tileWidth, animation: animation, widget: widget,);
   }
          @override
   void initState() {
     super.initState();
     controller = AnimationController(
-      duration: Duration(
+      duration: const Duration(
         milliseconds: 1000,
       ),
       vsync: this,
@@ -64,10 +64,10 @@ class _TileBoxState extends State<TileBox> with SingleTickerProviderStateMixin{
 
 class AnimatedTile extends AnimatedWidget {
   const AnimatedTile({
-    Key key,
-    @required this.tileWidth,
-    @required this.animation,
-    @required this.widget,
+     Key? key,
+    required this.tileWidth,
+    required this.animation,
+    required this.widget,
   }) : super(key: key, listenable: animation);
 
   final double tileWidth;

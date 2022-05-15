@@ -1,33 +1,34 @@
 class Tile {
-  int value;
-  int newValue;
-  bool moveable;
-  int col;
-  int row;
+  late int value;
+  late int newValue;
+  late bool moveable;
+  late int col;
+  late int row;
   bool isNew = true;
-  int positionVertical;
-  int positionHorizontal;
+  late int positionVertical;
+  late int positionHorizontal;
 
-  Tile({this.col , this.row, this.value}){
+  Tile({required this.col, required this.row, required this.value}) {
     newValue = value;
     moveable = true;
     positionVertical = 0;
     positionHorizontal = 0;
   }
-  setMoveable(bool moveable){
+
+  setMoveable(bool moveable) {
     this.moveable = moveable;
   }
+
   @override
-  String toString()
-  {
-    return "col: " + col.toString() + " row: "+ row.toString() + " value: " + value.toString();
+  String toString() {
+    return "col: $col row: $row value: $value";
   }
 
   bool isEmpty() {
-    return value==0;
+    return value == 0;
   }
 
-  setValue(int value){
+  setValue(int value) {
     this.value = value;
     newValue = value;
   }

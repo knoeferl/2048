@@ -4,18 +4,17 @@ import '../widgets/TileBox.dart';
 import '../widgets/listdrawer.dart';
 
 class Game extends StatefulWidget {
-  Game({Key key}) : super(key: key);
+  Game({Key? key}) : super(key: key);
 
   @override
   _GameState createState() => _GameState();
 }
 
 class _GameState extends State<Game> {
-  bool gameOver;
-  bool _isMoving;
-  Field buttonsList;
-  double totalwidth = 400;
-  GlobalKey _fieldkey = GlobalKey();
+  late bool gameOver;
+  late bool _isMoving;
+  late Field buttonsList;
+  double totalWidth = 400;
   int animationTime = 0;
 
   @override
@@ -24,158 +23,101 @@ class _GameState extends State<Game> {
     gameOver = false;
     _isMoving = false;
     buttonsList = Field();
-    WidgetsBinding.instance.addPostFrameCallback((_) => getFieldSize());
-  }
-
-  getFieldSize() {
-    RenderBox fieldsize = _fieldkey.currentContext.findRenderObject();
-    totalwidth = fieldsize.size.width;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: ListDrawer(newGame: newGame),
-      appBar: new AppBar(
+      appBar: AppBar(
           title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text("2048"),
-        ],
+        children: const <Widget>[Text("2048")],
       )),
       body: Container(
         decoration: BoxDecoration(
           color: Colors.orange[50],
         ),
-        child: new Column(
+        child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Container(
-                margin: const EdgeInsets.all(8.0),
                 height: 100,
+                margin: const EdgeInsets.all(8.0),
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
-                    Expanded(
-                      flex: 1,
-                      child: Container(
-                        margin: const EdgeInsets.all(8.0),
-                        padding: const EdgeInsets.all(8.0),
-                        decoration: BoxDecoration(color: Colors.orange[100]),
-                        child: FittedBox(
-                          child: Column(
-                            children: <Widget>[
-                              Text(
-                                "score",
-                                textScaleFactor: 7,
-                              ),
-                              Text(
-                                buttonsList.score.toString(),
-                                textScaleFactor: 10,
-                              ),
-                            ],
-                          ),
+                    Container(
+                      width: 250,
+                      decoration: BoxDecoration(color: Colors.orange[100]),
+                      child: FittedBox(
+                        child: Column(
+                          children: <Widget>[
+                            const Text(
+                              "score",
+                              textScaleFactor: 7,
+                            ),
+                            Text(
+                              "${buttonsList.score}",
+                              textScaleFactor: 10,
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                    Expanded(
-                      child: FittedBox(
-                        fit: BoxFit.fitWidth,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: FlatButton(
-                              color: Colors.orange[100],
-                              onPressed: () => redo(),
-                              child: Icon(Icons.redo)),
-                        ),
-                      ),
+                    FittedBox(
+                      fit: BoxFit.fitWidth,
+                      child: TextButton(
+                          style:
+                              TextButton.styleFrom(primary: Colors.orange[100]),
+                          onPressed: () => redo(),
+                          child: const Icon(Icons.redo)),
                     )
                   ],
                 ),
               ),
-              AspectRatio(
-                aspectRatio: 1,
-                child: Padding(
-                  padding: EdgeInsets.all(5),
-                  child: GestureDetector(
-                    onVerticalDragUpdate: (detail) {
-                      if (detail.delta.distance == 0 || _isMoving) {
-                        return;
-                      }
-                      _isMoving = true;
-                      if (detail.delta.direction > 0) {
-                        setState(() {
-                          moveTiles(Direction.top);
-                        });
-                      } else {
-                        setState(() {
-                          moveTiles(Direction.bottom);
-                        });
-                      }
-                    },
-                    onVerticalDragEnd: (d) {
-                      _isMoving = false;
-                    },
-                    onVerticalDragCancel: () {
-                      _isMoving = false;
-                    },
-                    onHorizontalDragUpdate: (d) {
-                      if (d.delta.distance == 0 || _isMoving) {
-                        return;
-                      }
-                      _isMoving = true;
-                      if (d.delta.direction > 0) {
-                        setState(() {
-                          moveTiles(Direction.left);
-                        });
-                      } else {
-                        setState(() {
-                          moveTiles(Direction.right);
-                        });
-                      }
-                    },
-                    onHorizontalDragEnd: (d) {
-                      _isMoving = false;
-                    },
-                    onHorizontalDragCancel: () {
-                      _isMoving = false;
-                    },
-                    child: Container(
-                      key: _fieldkey,
-                      decoration: BoxDecoration(color: Colors.grey[500]),
-                      child: Stack(
-                          children: Iterable.generate(
-                              buttonsList.flatList().length, (tileNum) {
-                        var tileWidth = totalwidth / buttonsList.getLength();
+              FittedBox(
+                fit: BoxFit.contain,
+                child: GestureDetector(
+                  onVerticalDragUpdate: moveVertical,
+                  onVerticalDragEnd: stopMoving,
+                  onVerticalDragCancel: stopMoving2,
+                  onHorizontalDragUpdate: moveHorizontal,
+                  onHorizontalDragEnd: stopMoving,
+                  onHorizontalDragCancel: stopMoving2,
+                  child: Container(
+                    padding: const EdgeInsets.all(5),
+                    width: totalWidth,
+                    height: totalWidth,
+                    decoration: BoxDecoration(color: Colors.grey[500]),
+                    child: Stack(
+                        children: Iterable.generate(
+                      buttonsList.flatList().length,
+                      (tileNum) {
+                        var tileWidth =
+                            totalWidth / buttonsList.getLength();
                         return AnimatedPositioned(
-                          onEnd: () =>
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                          onEnd: () => WidgetsBinding.instance
+                              .addPostFrameCallback((_) {
                             animationTime = 10;
                             setState(() {
-                              buttonsList.board
-                                  .forEach((row) => row.forEach((tile) {
-                                        tile.value = tile.newValue;
-                                        tile.positionHorizontal = 0;
-                                        tile.positionVertical = 0;
-                                      }));
+                              for (var row in buttonsList.board) {
+                                for (var tile in row) {
+                                  tile.value = tile.newValue;
+                                  tile.positionHorizontal = 0;
+                                  tile.positionVertical = 0;
+                                }
+                              }
                             });
                           }),
-                          key: Key("tile" + tileNum.toString()),
-                          left:
-                              (tileNum % buttonsList.getLength() * tileWidth) +
-                                  (buttonsList
-                                          .flatList()[tileNum]
-                                          .positionHorizontal *
-                                      tileWidth),
-                          top: ((tileNum / buttonsList.getLength()).floor() *
-                                  tileWidth) +
-                              (buttonsList
-                                      .flatList()[tileNum]
-                                      .positionVertical *
-                                  tileWidth),
+                          key: Key("tile_$tileNum"),
+                          left: left(tileNum, tileWidth),
+                          top: top(tileNum, tileWidth),
+                          duration: Duration(milliseconds: animationTime),
                           child: TileBox(
                             context: context,
                             buttonsList: buttonsList,
@@ -183,10 +125,9 @@ class _GameState extends State<Game> {
                             tileWidth: tileWidth,
                             tile: buttonsList.flatList()[tileNum],
                           ),
-                          duration: Duration(milliseconds: animationTime),
                         );
-                      }).toList()),
-                    ),
+                      },
+                    ).toList()),
                   ),
                 ),
               ),
@@ -195,11 +136,56 @@ class _GameState extends State<Game> {
     );
   }
 
-  // void createTile() {
-  //   setState(() {
-  //     buttonsList.createTile();
-  //   });
-  // }
+  double top(int tileNum, double tileWidth) {
+    return ((tileNum / buttonsList.getLength()).floor() * tileWidth) +
+        (buttonsList.flatList()[tileNum].positionVertical * tileWidth);
+  }
+
+  double left(int tileNum, double tileWidth) {
+    return (tileNum % buttonsList.getLength() * tileWidth) +
+        (buttonsList.flatList()[tileNum].positionHorizontal * tileWidth);
+  }
+
+  void stopMoving2() {
+    _isMoving = false;
+  }
+
+  void stopMoving(d) {
+    _isMoving = false;
+  }
+
+  void moveHorizontal(d) {
+    if (d.delta.distance == 0 || _isMoving) {
+      return;
+    }
+    _isMoving = true;
+    if (d.delta.direction > 0) {
+      setState(() {
+        moveTiles(Direction.left);
+      });
+    } else {
+      setState(() {
+        moveTiles(Direction.right);
+      });
+    }
+  }
+
+  void moveVertical(detail) {
+    if (detail.delta.distance == 0 || _isMoving) {
+      return;
+    }
+    _isMoving = true;
+    if (detail.delta.direction > 0) {
+      setState(() {
+        moveTiles(Direction.top);
+      });
+    } else {
+      setState(() {
+        moveTiles(Direction.bottom);
+      });
+    }
+  }
+
 
   void newGame({int size = 4}) {
     setState(() {
@@ -215,8 +201,9 @@ class _GameState extends State<Game> {
       if (!buttonsList.notMoved) buttonsList.saveBoard();
       buttonsList.moveTiles(direction);
       if (buttonsList.gameWon && !buttonsList.playAfterWon) wonDialog(context);
-      if (!buttonsList.createTile() && buttonsList.gamelost())
+      if (!buttonsList.createTile() && buttonsList.gamelost()) {
         lostDialog(context);
+      }
     });
   }
 
@@ -231,11 +218,11 @@ class _GameState extends State<Game> {
     return showDialog(
         context: context,
         builder: (_) => AlertDialog(
-              title: Text("you won!"),
+              title: const Text("you won!"),
               actions: <Widget>[
                 IconButton(
                     onPressed: () => newGame(size: buttonsList.getLength()),
-                    icon: Icon(Icons.refresh)),
+                    icon: const Icon(Icons.refresh)),
               ],
             ));
   }
@@ -244,11 +231,11 @@ class _GameState extends State<Game> {
     return showDialog(
         context: context,
         builder: (_) => AlertDialog(
-              title: Text("Lost"),
+              title: const Text("Lost"),
               actions: <Widget>[
                 IconButton(
                     onPressed: () => newGame(size: buttonsList.getLength()),
-                    icon: Icon(Icons.refresh)),
+                    icon: const Icon(Icons.refresh)),
               ],
             ));
   }

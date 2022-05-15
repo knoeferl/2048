@@ -5,15 +5,15 @@ import './tile.dart';
 enum Direction { left, right, top, bottom }
 
 class Field {
-  List<List<Tile>> board;
-  List<List<int>> lastBoard;
-  int size;
-  int score;
-  int oldScore;
-  bool notMoved;
-  bool gameWon;
-  bool gameLost;
-  bool playAfterWon;
+ late List<List<Tile>> board;
+ late List<List<int>> lastBoard;
+ late int size;
+ late int score;
+ late int oldScore;
+ late bool notMoved;
+ late bool gameWon;
+ late bool gameLost;
+ late bool playAfterWon;
   Field({this.size = 4}) {
     board = Iterable.generate(
         size,
@@ -53,7 +53,7 @@ class Field {
   }
 
   List<Tile> getEmptyTiles() {
-    List<Tile> ret = List();
+    List<Tile> ret = [];
     for (var row in board) {
       for (var number in row) {
         if (number.value == 0) {
@@ -112,7 +112,7 @@ class Field {
 
   moveTile(Tile tile, Direction direction) {
     try {
-      Tile nextTileN = nextTile(tile, direction);
+      Tile? nextTileN = nextTile(tile, direction);
       if (nextTileN.newValue == 0 && tile.newValue == 0) {
         moveTile(nextTileN, direction);
         return;
@@ -148,7 +148,7 @@ class Field {
     } catch (e) {}
   }
 
- changePositon(Tile tile, {Direction direction}) {
+ changePositon(Tile tile, {required Direction direction}) {
     switch (direction) {
       case Direction.top:
         tile.positionVertical = -1;
@@ -179,8 +179,6 @@ class Field {
         return Direction.left;
       case Direction.left:
         return Direction.right;
-      default:
-        return null;
     }
   }
 
@@ -198,8 +196,6 @@ class Field {
       case Direction.left:
         if (0 > tile.row) throw Exception();
         return board[tile.col][tile.row - 1];
-      default:
-        return null;
     }
   }
 
