@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import '../models/field.dart';
-import '../widgets/TileBox.dart';
+import '../widgets/tile_box.dart';
 import '../widgets/listdrawer.dart';
+import '../widgets/keyboard_action_detector.dart';
 import 'dart:math' as math;
 
 class Game extends StatefulWidget {
-  Game({Key? key}) : super(key: key);
+  const Game({Key? key}) : super(key: key);
 
   @override
   _GameState createState() => _GameState();
@@ -96,51 +97,65 @@ class _GameState extends State<Game> {
             Expanded(
               child: FittedBox(
                 fit: BoxFit.contain,
-                child: GestureDetector(
-                  onVerticalDragUpdate: moveVertical,
-                  onVerticalDragEnd: stopMoving,
-                  onVerticalDragCancel: stopMoving2,
-                  onHorizontalDragUpdate: moveHorizontal,
-                  onHorizontalDragEnd: stopMoving,
-                  onHorizontalDragCancel: stopMoving2,
-                  child: Container(
-                    padding: const EdgeInsets.all(5),
-                    width: totalWidth,
-                    height: totalWidth,
-                    decoration: BoxDecoration(color: Colors.grey[500]),
-                    child: Stack(
-                      children: Iterable.generate(
-                        buttonsList.flatList().length,
-                        (tileNum) {
-                          var tileWidth = totalWidth / buttonsList.getLength();
-                          return AnimatedPositioned(
-                            onEnd: () => WidgetsBinding.instance
-                                .addPostFrameCallback((_) {
-                              animationTime = 10;
-                              setState(() {
-                                for (var row in buttonsList.board) {
-                                  for (var tile in row) {
-                                    tile.value = tile.newValue;
-                                    tile.positionHorizontal = 0;
-                                    tile.positionVertical = 0;
+                child: KeyboardActionDetector(
+                  onArrowDownCallback: () => setState(() {
+                    moveTiles(Direction.top);
+                  }),
+                  onArrowRightCallback: () => setState(() {
+                    moveTiles(Direction.right);
+                  }),
+                  onArrowUpCallback: () => setState(() {
+                    moveTiles(Direction.bottom);
+                  }),
+                  onArrowLeftCallback: () => setState(() {
+                    moveTiles(Direction.left);
+                  }),
+                  child: GestureDetector(
+                    onVerticalDragUpdate: moveVertical,
+                    onVerticalDragEnd: stopMoving,
+                    onVerticalDragCancel: stopMoving2,
+                    onHorizontalDragUpdate: moveHorizontal,
+                    onHorizontalDragEnd: stopMoving,
+                    onHorizontalDragCancel: stopMoving2,
+                    child: Container(
+                      padding: const EdgeInsets.all(5),
+                      width: totalWidth,
+                      height: totalWidth,
+                      decoration: BoxDecoration(color: Colors.grey[500]),
+                      child: Stack(
+                        children: Iterable.generate(
+                          buttonsList.flatList().length,
+                          (tileNum) {
+                            var tileWidth = totalWidth / buttonsList.getLength();
+                            return AnimatedPositioned(
+                              onEnd: () => WidgetsBinding.instance
+                                  .addPostFrameCallback((_) {
+                                animationTime = 10;
+                                setState(() {
+                                  for (var row in buttonsList.board) {
+                                    for (var tile in row) {
+                                      tile.value = tile.newValue;
+                                      tile.positionHorizontal = 0;
+                                      tile.positionVertical = 0;
+                                    }
                                   }
-                                }
-                              });
-                            }),
-                            key: Key("tile_$tileNum"),
-                            left: left(tileNum, tileWidth),
-                            top: top(tileNum, tileWidth),
-                            duration: Duration(milliseconds: animationTime),
-                            child: TileBox(
-                              context: context,
-                              buttonsList: buttonsList,
-                              tileNum: tileNum,
-                              tileWidth: tileWidth,
-                              tile: buttonsList.flatList()[tileNum],
-                            ),
-                          );
-                        },
-                      ).toList(),
+                                });
+                              }),
+                              key: Key("tile_$tileNum"),
+                              left: left(tileNum, tileWidth),
+                              top: top(tileNum, tileWidth),
+                              duration: Duration(milliseconds: animationTime),
+                              child: TileBox(
+                                context: context,
+                                buttonsList: buttonsList,
+                                tileNum: tileNum,
+                                tileWidth: tileWidth,
+                                tile: buttonsList.flatList()[tileNum],
+                              ),
+                            );
+                          },
+                        ).toList(),
+                      ),
                     ),
                   ),
                 ),
@@ -221,7 +236,7 @@ class _GameState extends State<Game> {
       if (!buttonsList.notMoved) buttonsList.saveBoard();
       buttonsList.moveTiles(direction);
       if (buttonsList.gameWon && !buttonsList.playAfterWon) wonDialog(context);
-      if (!buttonsList.createTile() && buttonsList.gamelost()) {
+      if (!buttonsList.createTile() && buttonsList.isGameLost()) {
         lostDialog(context);
       }
     });

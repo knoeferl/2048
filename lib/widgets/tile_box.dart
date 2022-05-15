@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/tileColors.dart';
+import '../models/tile_colors.dart';
 import '../models/field.dart';
 import '../models/tile.dart';
 
@@ -14,7 +14,7 @@ class TileBox extends StatefulWidget {
   }) : super(key: key);
 
   final Field buttonsList;
-  final context;
+  final BuildContext context;
   final int tileNum;
   final double tileWidth;
   final Tile tile;
@@ -47,7 +47,7 @@ class _TileBoxState extends State<TileBox> with SingleTickerProviderStateMixin{
       ),
       vsync: this,
     );     
-    animation = Tween(begin: 0.0, end: 1.0).animate(controller);
+    animation = Tween(begin: 0.9, end: 1.0).animate(controller);
   } 
     @override
   void dispose() {

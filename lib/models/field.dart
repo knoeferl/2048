@@ -125,7 +125,7 @@ class Field {
         nextTileN.isNew = true;
         changePosition(nextTileN, direction: direction);
         moveTile(nextTileN, direction);
-        moveTile(nextTile(tile, reverseDircetion(direction)), direction);
+        moveTile(nextTile(tile, reverseDirection(direction)), direction);
         notMoved = false;
         return;
       }
@@ -174,7 +174,7 @@ class Field {
     }
   }
 
-  Direction reverseDircetion(Direction direction) {
+  Direction reverseDirection(Direction direction) {
     switch (direction) {
       case Direction.top:
         return Direction.bottom;
@@ -210,7 +210,7 @@ class Field {
     return board.length;
   }
 
-  bool gamelost() {
+  bool isGameLost() {
     // if (getEmptyTiles().isEmpty) return true;
     for (int col = 0; col < board.length; ++col) {
       for (int row = 0; row < board.length; ++row) {
