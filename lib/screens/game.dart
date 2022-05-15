@@ -29,7 +29,7 @@ class _GameState extends State<Game> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: ListDrawer(newGame: newGame),
+      drawer: ListDrawer(newGame: newGame, fieldSize: fieldSize),
       appBar: AppBar(
           actions: [
             IconButton(

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class ListDrawer extends StatefulWidget {
-  const ListDrawer({Key? key, required this.newGame}) : super(key: key);
+  const ListDrawer({Key? key, required this.newGame, required this.fieldSize}) : super(key: key);
+
+  final int fieldSize;
   final Function newGame;
 
   @override
@@ -10,7 +12,11 @@ class ListDrawer extends StatefulWidget {
 
 class _ListDrawerState extends State<ListDrawer> {
    final numItems = 3;
-  int selectedItem = 1;
+  late int selectedItem;
+
+  initState(){
+    selectedItem = widget.fieldSize-3;
+  }
 
   @override
   Widget build(BuildContext context) {
