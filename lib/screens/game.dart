@@ -15,15 +15,14 @@ class _GameState extends State<Game> {
   late bool gameOver;
   late bool _isMoving;
   late Field buttonsList;
+  late int fieldSize;
   double totalWidth = 400;
   int animationTime = 0;
 
   @override
   void initState() {
     super.initState();
-    gameOver = false;
-    _isMoving = false;
-    buttonsList = Field();
+    reset();
   }
 
   @override
@@ -31,10 +30,16 @@ class _GameState extends State<Game> {
     return Scaffold(
       drawer: ListDrawer(newGame: newGame),
       appBar: AppBar(
+          actions: [
+            IconButton(
+              onPressed: () => newGame(size: fieldSize),
+              icon: const Icon(IconData(0xe514, fontFamily: 'MaterialIcons')),
+            ),
+          ],
           title: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: const <Widget>[Text("2048")],
-      )),
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const <Widget>[Text("2048")],
+          )),
       body: Container(
         decoration: BoxDecoration(
           color: Colors.orange[50],
@@ -89,7 +94,6 @@ class _GameState extends State<Game> {
               ),
             ),
             Expanded(
-
               child: FittedBox(
                 fit: BoxFit.contain,
                 child: GestureDetector(
@@ -110,8 +114,8 @@ class _GameState extends State<Game> {
                         (tileNum) {
                           var tileWidth = totalWidth / buttonsList.getLength();
                           return AnimatedPositioned(
-                            onEnd: () =>
-                                WidgetsBinding.instance.addPostFrameCallback((_) {
+                            onEnd: () => WidgetsBinding.instance
+                                .addPostFrameCallback((_) {
                               animationTime = 10;
                               setState(() {
                                 for (var row in buttonsList.board) {
@@ -200,10 +204,15 @@ class _GameState extends State<Game> {
 
   void newGame({int size = 4}) {
     setState(() {
-      gameOver = false;
-      _isMoving = false;
-      buttonsList = Field(size: size);
+      reset(size: size);
     });
+  }
+
+  void reset({int size = 4}) {
+    gameOver = false;
+    _isMoving = false;
+    buttonsList = Field(size: size);
+    fieldSize = size;
   }
 
   void moveTiles(Direction direction) {

@@ -97,7 +97,7 @@ class AnimatedTile extends AnimatedWidget {
                                   .flatList()[widget.tileNum]
                                   .value
                                   .toString(),
-                          style: new TextStyle(
+                          style: const TextStyle(
                               color: Colors.black, fontSize: 10.0),
                         ),
                       ),

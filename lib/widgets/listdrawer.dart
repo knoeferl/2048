@@ -9,9 +9,8 @@ class ListDrawer extends StatefulWidget {
 }
 
 class _ListDrawerState extends State<ListDrawer> {
-  static final numItems = 3;
-
-  int selectedItem = 0;
+   final numItems = 3;
+  int selectedItem = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +25,7 @@ class _ListDrawerState extends State<ListDrawer> {
                 style: textTheme.titleMedium,
               ),
               subtitle: Text(
-                "created by Graf",
+                "created by M. Knöferl",
                 style: textTheme.bodyText1,
               ),
             ),
