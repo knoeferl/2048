@@ -99,11 +99,11 @@ class _GameState extends State<Game> {
                 fit: BoxFit.contain,
                 child: GestureDetector(
                   onVerticalDragUpdate: moveVertical,
-                  onVerticalDragEnd: stopMoving,
-                  onVerticalDragCancel: stopMoving2,
+                  onVerticalDragEnd: (_) => _isMoving = false,
+                  onVerticalDragCancel: () => _isMoving = false,
                   onHorizontalDragUpdate: moveHorizontal,
-                  onHorizontalDragEnd: stopMoving,
-                  onHorizontalDragCancel: stopMoving2,
+                  onHorizontalDragEnd: (_) => _isMoving = false,
+                  onHorizontalDragCancel: () => _isMoving = false,
                   child: KeyboardActionDetector(
                     onArrowDownCallback: () => setState(() {
                       moveTiles(Direction.top);
@@ -125,7 +125,8 @@ class _GameState extends State<Game> {
                         children: Iterable.generate(
                           buttonsList.flatList().length,
                           (tileNum) {
-                            var tileWidth = totalWidth / buttonsList.getLength();
+                            var tileWidth =
+                                totalWidth / buttonsList.getLength();
                             return AnimatedPositioned(
                               onEnd: () => WidgetsBinding.instance
                                   .addPostFrameCallback((_) {
@@ -174,14 +175,6 @@ class _GameState extends State<Game> {
   double left(int tileNum, double tileWidth) {
     return (tileNum % buttonsList.getLength() * tileWidth) +
         (buttonsList.flatList()[tileNum].positionHorizontal * tileWidth);
-  }
-
-  void stopMoving2() {
-    _isMoving = false;
-  }
-
-  void stopMoving(d) {
-    _isMoving = false;
   }
 
   void moveHorizontal(d) {
@@ -255,7 +248,10 @@ class _GameState extends State<Game> {
               title: const Text("you won!"),
               actions: <Widget>[
                 IconButton(
-                    onPressed: () => newGame(size: buttonsList.getLength()),
+                    onPressed: () {
+                      newGame(size: buttonsList.getLength());
+                      Navigator.of(context).pop();
+                    },
                     icon: const Icon(Icons.refresh)),
               ],
             ));
@@ -265,10 +261,14 @@ class _GameState extends State<Game> {
     return showDialog(
         context: context,
         builder: (_) => AlertDialog(
+
               title: const Text("Lost"),
               actions: <Widget>[
                 IconButton(
-                    onPressed: () => newGame(size: buttonsList.getLength()),
+                    onPressed: () {
+                      newGame(size: buttonsList.getLength());
+                      Navigator.of(context).pop();
+                    },
                     icon: const Icon(Icons.refresh)),
               ],
             ));

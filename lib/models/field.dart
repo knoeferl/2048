@@ -114,6 +114,7 @@ class Field {
   moveTile(Tile tile, Direction direction) {
     try {
       Tile? nextTileN = nextTile(tile, direction);
+      if (nextTileN == null) return;
       if (nextTileN.newValue == 0 && tile.newValue == 0) {
         moveTile(nextTileN, direction);
         return;
@@ -125,7 +126,10 @@ class Field {
         nextTileN.isNew = true;
         changePosition(nextTileN, direction: direction);
         moveTile(nextTileN, direction);
-        moveTile(nextTile(tile, reverseDirection(direction)), direction);
+        Tile? nextTile2 = nextTile(tile, reverseDirection(direction));
+        if (nextTile2 != null) {
+          moveTile(nextTile2, direction);
+        }
         notMoved = false;
         return;
       }
@@ -187,19 +191,19 @@ class Field {
     }
   }
 
-  Tile nextTile(Tile tile, Direction direction) {
+  Tile? nextTile(Tile tile, Direction direction) {
     switch (direction) {
       case Direction.top:
-        if (0 > tile.col) throw Exception();
+        if (0 > tile.col) return null;
         return board[tile.col + 1][tile.row];
       case Direction.bottom:
-        if (board.length - 1 < tile.col) throw Exception();
+        if (board.length - 1 < tile.col) return null;
         return board[tile.col - 1][tile.row];
       case Direction.right:
-        if (board.length - 1 < tile.row) throw Exception();
+        if (board.length - 1 < tile.row) return null;
         return board[tile.col][tile.row + 1];
       case Direction.left:
-        if (0 > tile.row) throw Exception();
+        if (0 > tile.row) return null;
         return board[tile.col][tile.row - 1];
     }
   }
@@ -214,20 +218,18 @@ class Field {
     // if (getEmptyTiles().isEmpty) return true;
     for (int col = 0; col < board.length; ++col) {
       for (int row = 0; row < board.length; ++row) {
-        try {
-          if (board[col][row].value ==
-                  nextTile(board[col][row], Direction.top).value ||
-              board[col][row].value ==
-                  nextTile(board[col][row], Direction.bottom).value ||
-              board[col][row].value ==
-                  nextTile(board[col][row], Direction.left).value ||
-              board[col][row].value ==
-                  nextTile(board[col][row], Direction.right).value) {
-            return false;
-          }
-        } catch (e) {
-          continue;
-        }
+        Tile? nextTileT = nextTile(board[col][row], Direction.top);
+        if (nextTileT != null && board[col][row].value == nextTileT.value)
+          return false;
+        var nextTileB = nextTile(board[col][row], Direction.bottom);
+        if (nextTileB != null && board[col][row].value == nextTileB.value)
+          return false;
+        var nextTileLeft = nextTile(board[col][row], Direction.left);
+        if (nextTileLeft != null && board[col][row].value == nextTileLeft.value)
+          return false;
+        var nextTileRight = nextTile(board[col][row], Direction.right);
+        if (nextTileRight != null &&
+            board[col][row].value == nextTileRight.value) return false;
       }
     }
     return true;
