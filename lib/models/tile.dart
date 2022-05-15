@@ -30,6 +30,6 @@ class Tile {
 
   setValue(int value) {
     this.value = value;
-    newValue = value;
+    this.newValue = value;
   }
 }
