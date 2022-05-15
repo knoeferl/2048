@@ -78,7 +78,7 @@ class _GameState extends State<Game> {
                   ),
                   Expanded(
                     child: FittedBox(
-                      fit: BoxFit.fitWidth,
+                      fit: BoxFit.contain,
                       child: TextButton(
                           style:
                               TextButton.styleFrom(primary: Colors.orange[100]),
