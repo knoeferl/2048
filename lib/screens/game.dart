@@ -97,28 +97,27 @@ class _GameState extends State<Game> {
             Expanded(
               child: FittedBox(
                 fit: BoxFit.contain,
-                child: KeyboardActionDetector(
-                  onArrowDownCallback: () => setState(() {
-                    moveTiles(Direction.top);
-                  }),
-                  onArrowRightCallback: () => setState(() {
-                    moveTiles(Direction.right);
-                  }),
-                  onArrowUpCallback: () => setState(() {
-                    moveTiles(Direction.bottom);
-                  }),
-                  onArrowLeftCallback: () => setState(() {
-                    moveTiles(Direction.left);
-                  }),
-                  child: GestureDetector(
-                    onVerticalDragUpdate: moveVertical,
-                    onVerticalDragEnd: stopMoving,
-                    onVerticalDragCancel: stopMoving2,
-                    onHorizontalDragUpdate: moveHorizontal,
-                    onHorizontalDragEnd: stopMoving,
-                    onHorizontalDragCancel: stopMoving2,
+                child: GestureDetector(
+                  onVerticalDragUpdate: moveVertical,
+                  onVerticalDragEnd: stopMoving,
+                  onVerticalDragCancel: stopMoving2,
+                  onHorizontalDragUpdate: moveHorizontal,
+                  onHorizontalDragEnd: stopMoving,
+                  onHorizontalDragCancel: stopMoving2,
+                  child: KeyboardActionDetector(
+                    onArrowDownCallback: () => setState(() {
+                      moveTiles(Direction.top);
+                    }),
+                    onArrowRightCallback: () => setState(() {
+                      moveTiles(Direction.right);
+                    }),
+                    onArrowUpCallback: () => setState(() {
+                      moveTiles(Direction.bottom);
+                    }),
+                    onArrowLeftCallback: () => setState(() {
+                      moveTiles(Direction.left);
+                    }),
                     child: Container(
-                      padding: const EdgeInsets.all(5),
                       width: totalWidth,
                       height: totalWidth,
                       decoration: BoxDecoration(color: Colors.grey[500]),
