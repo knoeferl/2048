@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ListDrawer extends StatefulWidget {
-  const ListDrawer({Key? key, required this.newGame, required this.fieldSize}) : super(key: key);
+  const ListDrawer({super.key, required this.newGame, required this.fieldSize});
 
   final int fieldSize;
   final Function newGame;
@@ -14,7 +14,9 @@ class _ListDrawerState extends State<ListDrawer> {
    final numItems = 3;
   late int selectedItem;
 
-  initState(){
+  @override
+  void initState(){
+    super.initState();
     selectedItem = widget.fieldSize-3;
   }
 
@@ -32,7 +34,7 @@ class _ListDrawerState extends State<ListDrawer> {
               ),
               subtitle: Text(
                 "created by M. Knöferl",
-                style: textTheme.bodyText1,
+                style: textTheme.bodyLarge,
               ),
             ),
             const Divider(),
