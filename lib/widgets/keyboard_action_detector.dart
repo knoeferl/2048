@@ -3,13 +3,13 @@ import 'package:flutter/services.dart';
 
 class KeyboardActionDetector extends StatelessWidget {
   const KeyboardActionDetector({
-    Key? key,
+    super.key,
     required this.child,
     required this.onArrowDownCallback,
     required this.onArrowUpCallback,
     required this.onArrowLeftCallback,
     required this.onArrowRightCallback,
-  }) : super(key: key);
+  });
 
   final Function onArrowUpCallback;
   final Function onArrowDownCallback;
