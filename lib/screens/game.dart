@@ -6,7 +6,7 @@ import '../widgets/keyboard_action_detector.dart';
 import 'dart:math' as math;
 
 class Game extends StatefulWidget {
-  const Game({Key? key}) : super(key: key);
+  const Game({super.key});
 
   @override
   _GameState createState() => _GameState();
@@ -28,6 +28,10 @@ class _GameState extends State<Game> {
 
   @override
   Widget build(BuildContext context) {
+    final flatList = buttonsList.flatList();
+    final flatListLength = flatList.length;
+    final tileWidth = totalWidth / buttonsList.getLength();
+    
     return Scaffold(
       drawer: ListDrawer(newGame: newGame, fieldSize: fieldSize),
       appBar: AppBar(
@@ -123,10 +127,8 @@ class _GameState extends State<Game> {
                       decoration: BoxDecoration(color: Colors.grey[500]),
                       child: Stack(
                         children: Iterable.generate(
-                          buttonsList.flatList().length,
+                          flatListLength,
                           (tileNum) {
-                            var tileWidth =
-                                totalWidth / buttonsList.getLength();
                             return AnimatedPositioned(
                               onEnd: () => WidgetsBinding.instance
                                   .addPostFrameCallback((_) {
@@ -150,7 +152,7 @@ class _GameState extends State<Game> {
                                 buttonsList: buttonsList,
                                 tileNum: tileNum,
                                 tileWidth: tileWidth,
-                                tile: buttonsList.flatList()[tileNum],
+                                tile: flatList[tileNum],
                               ),
                             );
                           },
@@ -168,13 +170,15 @@ class _GameState extends State<Game> {
   }
 
   double top(int tileNum, double tileWidth) {
+    final tile = buttonsList.flatList()[tileNum];
     return ((tileNum / buttonsList.getLength()).floor() * tileWidth) +
-        (buttonsList.flatList()[tileNum].positionVertical * tileWidth);
+        (tile.positionVertical * tileWidth);
   }
 
   double left(int tileNum, double tileWidth) {
+    final tile = buttonsList.flatList()[tileNum];
     return (tileNum % buttonsList.getLength() * tileWidth) +
-        (buttonsList.flatList()[tileNum].positionHorizontal * tileWidth);
+        (tile.positionHorizontal * tileWidth);
   }
 
   void moveHorizontal(d) {

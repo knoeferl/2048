@@ -15,6 +15,7 @@ class Field {
   late bool gameLost;
   late bool playAfterWon;
   final rand = Random();
+  List<Tile>? _cachedFlatList;
 
   Field({this.size = 4}) {
     board = Iterable.generate(
@@ -45,6 +46,7 @@ class Field {
   }
 
   void setBoard() {
+    _invalidateCache();
     for (int col = 0; col < board.length; ++col) {
       for (int row = 0; row < board.length; ++row) {
         board[col][row].value = lastBoard[col][row];
@@ -76,10 +78,16 @@ class Field {
   }
 
   List<Tile> flatList() {
-    return board.expand((i) => i).toList();
+    _cachedFlatList ??= board.expand((i) => i).toList();
+    return _cachedFlatList!;
+  }
+
+  void _invalidateCache() {
+    _cachedFlatList = null;
   }
 
   moveTiles(Direction direction) {
+    _invalidateCache();
     for (int col = 0; col < board.length; ++col) {
       for (int row = 0; row < board.length; ++row) {
         board[col][row].moveable = true;
@@ -208,28 +216,40 @@ class Field {
     }
   }
 
-  int random2or4() => (Random().nextBool() ? 2 : 4);
+  int random2or4() => (rand.nextBool() ? 2 : 4);
 
   int getLength() {
     return board.length;
   }
 
   bool isGameLost() {
-    // if (getEmptyTiles().isEmpty) return true;
+    // Early exit if there are empty tiles
+    if (getEmptyTiles().isNotEmpty) return false;
+    
+    // Check if any adjacent tiles can be merged
     for (int col = 0; col < board.length; ++col) {
       for (int row = 0; row < board.length; ++row) {
-        Tile? nextTileT = nextTile(board[col][row], Direction.top);
-        if (nextTileT != null && board[col][row].value == nextTileT.value)
+        final currentValue = board[col][row].value;
+        
+        // Check top neighbor
+        if (col > 0 && board[col - 1][row].value == currentValue) {
           return false;
-        var nextTileB = nextTile(board[col][row], Direction.bottom);
-        if (nextTileB != null && board[col][row].value == nextTileB.value)
+        }
+        
+        // Check bottom neighbor
+        if (col < board.length - 1 && board[col + 1][row].value == currentValue) {
           return false;
-        var nextTileLeft = nextTile(board[col][row], Direction.left);
-        if (nextTileLeft != null && board[col][row].value == nextTileLeft.value)
+        }
+        
+        // Check left neighbor
+        if (row > 0 && board[col][row - 1].value == currentValue) {
           return false;
-        var nextTileRight = nextTile(board[col][row], Direction.right);
-        if (nextTileRight != null &&
-            board[col][row].value == nextTileRight.value) return false;
+        }
+        
+        // Check right neighbor
+        if (row < board.length - 1 && board[col][row + 1].value == currentValue) {
+          return false;
+        }
       }
     }
     return true;
