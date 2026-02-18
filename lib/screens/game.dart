@@ -129,6 +129,7 @@ class _GameState extends State<Game> {
                         children: Iterable.generate(
                           flatListLength,
                           (tileNum) {
+                             final tile = flatList[tileNum];
                             return AnimatedPositioned(
                               onEnd: () => WidgetsBinding.instance
                                   .addPostFrameCallback((_) {
@@ -144,15 +145,17 @@ class _GameState extends State<Game> {
                                 });
                               }),
                               key: Key("tile_$tileNum"),
-                              left: left(tileNum, tileWidth),
-                              top: top(tileNum, tileWidth),
+                              left: (tileNum % buttonsList.getLength() * tileWidth) +
+                                  (tile.positionHorizontal * tileWidth),
+                              top: ((tileNum / buttonsList.getLength()).floor() * tileWidth) +
+                                  (tile.positionVertical * tileWidth),
                               duration: Duration(milliseconds: animationTime),
                               child: TileBox(
                                 context: context,
                                 buttonsList: buttonsList,
                                 tileNum: tileNum,
                                 tileWidth: tileWidth,
-                                tile: flatList[tileNum],
+                                tile: tile,
                               ),
                             );
                           },
@@ -167,18 +170,6 @@ class _GameState extends State<Game> {
         ),
       ),
     );
-  }
-
-  double top(int tileNum, double tileWidth) {
-    final tile = buttonsList.flatList()[tileNum];
-    return ((tileNum / buttonsList.getLength()).floor() * tileWidth) +
-        (tile.positionVertical * tileWidth);
-  }
-
-  double left(int tileNum, double tileWidth) {
-    final tile = buttonsList.flatList()[tileNum];
-    return (tileNum % buttonsList.getLength() * tileWidth) +
-        (tile.positionHorizontal * tileWidth);
   }
 
   void moveHorizontal(d) {
